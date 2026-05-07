@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#2c3338">
+    <title>Bin Calendar</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-192.png" type="image/png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Bins">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #2c3338;
+            --muted-text: #5b6770;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+            --grey-bg: #777777;
+            --grey-fg: #3d434a;
+
+            --blue-bg: #a9c6e0;
+            --blue-fg: #1f3a5c;
+
+            --green-bg: #b6cdb1;
+            --green-fg: #2f4a2c;
+
+            --glass-bg: #d6a8a3;
+            --glass-fg: #5a2a26;
+
+            --brown-bg: #c4a78a;
+            --brown-fg: #4a331f;
+
+            --food-bg: #dadada;
+            --food-fg: #514b27;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 2rem 1rem;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 560px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 1.25rem;
+            color: var(--text);
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.75rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .controls input[type="date"] {
+            flex: 1;
+            border: 1px solid #d8dde2;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text);
+            background: #fff;
+        }
+
+        .controls button {
+            border: none;
+            background: #2c3338;
+            color: #fff;
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .controls button:hover { background: #444c54; }
+
+        #thisWeeksBins {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+        }
+
+        .bin {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            padding: 0.85rem 1.1rem;
+            border-radius: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+        }
+
+        .bin .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .bin .label {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bin .type {
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: capitalize;
+            letter-spacing: 0.01em;
+        }
+
+        .bin .desc {
+            font-size: 0.82rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .bin .day {
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.7rem;
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .bin.grey  { background: var(--grey-bg);  color: var(--grey-fg); }
+        .bin.blue  { background: var(--blue-bg);  color: var(--blue-fg); }
+        .bin.green { background: var(--green-bg); color: var(--green-fg); }
+        .bin.glass { background: var(--glass-bg); color: var(--glass-fg); }
+        .bin.brown { background: var(--brown-bg); color: var(--brown-fg); }
+        .bin.food  { background: var(--food-bg);  color: var(--food-fg); }
+
+        .empty {
+            padding: 1.25rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            color: var(--muted-text);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>This Week's Bins</h1>
+
+        <div class="controls" style="display: none;">
+            <input type="date" id="testDate"/>
+            <button onclick="test()">Test</button>
+        </div>
+
+        <div id="thisWeeksBins"></div>
+    </div>
+
+<script>
+    class Bin {
+        constructor(frequency, firstCollection, type, description, colour, icon) {
+            this.frequency = Temporal.Duration.from({ weeks: frequency });
+            this.firstCollection = Temporal.PlainDate.from(firstCollection);
+            this.type = type;
+            this.description = description;
+            this.color = colour;
+            this.icon = icon;
+        }
+
+        nextCollection(today = Temporal.Now.plainDateISO()) {
+            let nextCollection = this.firstCollection;
+            while (Temporal.PlainDate.compare(today, nextCollection) > 0) {
+                nextCollection = nextCollection.add(this.frequency);
+            }
+            return nextCollection;
+        }
+    }
+
+    const greyBin  = new Bin(3, "2026-05-01", "grey",  "general waste",              "grey",  "fa-trash");
+    const blueBin  = new Bin(3, "2026-04-17", "blue",  "plastic and food packaging", "blue",  "fa-bottle-water");
+    const greenBin = new Bin(3, "2026-04-24", "green", "paper and cardboard",        "green", "fa-newspaper");
+    const glassBin = new Bin(2, "2026-04-30", "glass", "glass",                      "glass", "fa-wine-bottle");
+    const brownBin = new Bin(2, "2026-05-07", "brown", "garden waste",               "brown", "fa-leaf");
+    const foodBin  = new Bin(1, "2026-05-01", "food",  "food waste",                 "food",  "fa-apple-whole");
+
+    const testDateInput = document.getElementById("testDate");
+    const bins = [greyBin, blueBin, greenBin, glassBin, brownBin, foodBin];
+
+    function test() {
+        const testDate = Temporal.PlainDate.from(testDateInput.value);
+        const testWeek = testDate.weekOfYear;
+        renderBins(testWeek);
+    }
+
+    function dayOfWeekToString(dayOfWeek) {
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        return days[dayOfWeek - 1];
+    }
+
+    function renderBins(week = Temporal.Now.plainDateISO().weekOfYear) {
+        const container = document.getElementById("thisWeeksBins");
+        container.innerHTML = "";
+
+        const referenceDate = Temporal.PlainDate.from({ year: 2026, month: 1, day: 1 })
+            .add(Temporal.Duration.from({ weeks: week - 1 }));
+
+        const due = bins.filter(bin => bin.nextCollection(referenceDate).weekOfYear === week);
+
+        if (due.length === 0) {
+            container.innerHTML = `<div class="empty">No bin collections this week.</div>`;
+            return;
+        }
+
+        due.forEach(bin => {
+            const day = dayOfWeekToString(bin.nextCollection(referenceDate).dayOfWeek);
+            const card = document.createElement("div");
+            card.className = `bin ${bin.color}`;
+            card.innerHTML = `
+                <span class="icon"><i class="fa-solid ${bin.icon}"></i></span>
+                <span class="label">
+                    <span class="type">${bin.type} bin</span>
+                    <span class="desc">${bin.description}</span>
+                </span>
+                <span class="day">${day}</span>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    renderBins();
+
+    if (window.location.search.includes("test")) {
+        document.querySelector(".controls").attributes[style].value = "";
+    }
+
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("service-worker.js").catch(err => {
+                console.warn("Service worker registration failed:", err);
+            });
+        });
+    }
+</script>
+</body>
+</html>
